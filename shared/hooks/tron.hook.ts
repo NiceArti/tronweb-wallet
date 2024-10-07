@@ -32,7 +32,7 @@ export const useTronConnect = () => {
         }
 
         return (window as any).safepalTronProvider;
-    }, [window]);
+    }, []);
 
 
     const tronLinkProvider = useMemo(() => {
@@ -41,7 +41,7 @@ export const useTronConnect = () => {
         }
 
         return (window as any).tronLink;
-    }, [window]);
+    }, []);
 
     // Автоматическая проверка подключения при загрузке
     useEffect(() => {
