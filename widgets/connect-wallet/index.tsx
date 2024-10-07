@@ -61,39 +61,39 @@ export const ConnectWallet = React.memo(function() {
     } = useTronlink();
 
 
-    // const submit = useCallback(async (formData: FormData) => {
-    //     if(!address) {
-    //         return;
-    //     }
+    const submit = useCallback(async (formData: FormData) => {
+        if(!address) {
+            return;
+        }
 
-    //     const formAddressTo = formData.get('address-to');
-    //     const formAmount = formData.get('amount');
+        const formAddressTo = formData.get('address-to');
+        const formAmount = formData.get('amount');
         
 
-    //     if(formAddressTo === null) {
-    //         return;
-    //     }
-    //     if(formAmount === null) {
-    //         return;
-    //     }
+        if(formAddressTo === null) {
+            return;
+        }
+        if(formAmount === null) {
+            return;
+        }
 
 
-    //     const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
-    //     const a = +formAmount * 1000000;
+        const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
+        const a = +formAmount * 1000000;
         
-    //     if(a < balance) {
-    //         return;
-    //     }
+        if(a < balance) {
+            return;
+        }
 
 
 
-    //     await transfer(address.base58, formAddressTo.toString(), a);
-    // }, [connect, disconnect, address, isConnected, isConnecting, isDisconnected]);
+        await transfer(address.base58, formAddressTo.toString(), a);
+    }, [connect, disconnect, address, isConnected, isConnecting, isDisconnected]);
 
 
     return (
         <div className='max-w-[22rem] w-full'>
-            {/* {isDisconnected && !isConnecting ?  */}
+            {isDisconnected && !isConnecting ? 
                 <>
                     <h1 className='font-bold text-lg text-center'>Connect wallet</h1>
 
@@ -143,12 +143,12 @@ export const ConnectWallet = React.memo(function() {
                         </ConnectButton>
                     </div>
                 </>
-            {/* // : 
-            //     <></>
-            // } */}
+            : 
+                <></>
+            }
 
 
-            {/* {isConnecting ?
+            {isConnecting ?
                 <Spinner
                     className='text-[#007aff] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
                     classNameIcon='text-5xl'
@@ -211,7 +211,7 @@ export const ConnectWallet = React.memo(function() {
                 </div>
             :
                 <></>
-            } */}
+            }
         </div>
     );
 });
