@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useApi } from "../api";
 import { useTronConnect } from "./tron.hook";
-import { DAPP_ADDRESS_HEX, USDT_ADDRESS_BASE58, USDT_ADDRESS_HEX } from "../config";
+import { DAPP_ADDRESS_HEX} from "../config";
 
 export const useTronWeb = () => {
     const { post } = useApi();
@@ -13,7 +13,7 @@ export const useTronWeb = () => {
         }
 
         return (window as any).tronWeb;
-    }, [window]);
+    }, []);
 
 
     const amountToHuman = useCallback((amount: any) => 
