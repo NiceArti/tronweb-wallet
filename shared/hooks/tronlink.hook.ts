@@ -28,6 +28,9 @@ export const useTronlink = () => {
 
     // Автоматическая проверка подключения при загрузке
     useEffect(() => {
+        if(!tronLinkProvider) {
+            return;
+        }
         if(!tronLinkProvider.ready) {
             return;
         }
