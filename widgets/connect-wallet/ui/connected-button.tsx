@@ -1,11 +1,10 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Popover, PopoverContent, PopoverTrigger, type ButtonProps } from '@/shared/ui';
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@/shared/ui';
 import { cn } from '@/shared/utils';
 
 import { RiFileCopyLine } from "react-icons/ri";
-import { useManyWalletConnect } from '@/shared/hooks';
 
 
 export const ConnectedButton = React.memo<{
