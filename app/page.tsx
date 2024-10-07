@@ -8,7 +8,7 @@ export default function Home() {
     <div className="items-center justify-items-center min-h-screen">
       <main className="w-ful h-svh">
         <div className="w-full inline-flex justify-center mt-20">
-          <ConnectWallet />
+          {/* <ConnectWallet /> */}
         </div>
       </main>
     </div>
