@@ -34,7 +34,7 @@ export default function RootLayout({
         className={cn(inter.className, 'antialiased')}
       >
         <header className="w-full px-8 py-4">
-          <Link href={'/'} shallow>
+          <Link href='#' shallow>
             <Image {...BrandLogoAsset} alt="shield.sec" />
           </Link>
         </header>
