@@ -1,6 +1,6 @@
 'use client'
 
-// import { ConnectWallet } from "@/widgets/connect-wallet";
+import { ConnectWallet } from "@/widgets/connect-wallet";
 
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     <div className="items-center justify-items-center min-h-screen">
       <main className="w-ful h-svh">
         <div className="w-full inline-flex justify-center mt-20">
-          {/* <ConnectWallet /> */}
+          <ConnectWallet />
         </div>
       </main>
     </div>

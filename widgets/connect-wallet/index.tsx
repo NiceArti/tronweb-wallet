@@ -1,12 +1,8 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { 
-    useTronWalletConnect,
-    useSafePalConnect,
-    useWalletConnect,
-    useManyWalletConnect,
     useTronConnect,
     useTronWeb,
 } from '@/shared/hooks';
@@ -40,20 +36,18 @@ import { Payment, TransactionsTable } from '../tx-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { USDT_ADDRESS_BASE58 } from '@/shared/config';
+import { useConnect } from 'wagmi';
 
 
 export const ConnectWallet = React.memo(function() {
     const [addressTo, setAddressTo] = useState<string | undefined>(undefined);
     const [sendAmount, setSendAmount] = useState<string>('0');
     
+    
     const {
-        connect: connectMany,
-        disconnect: disconnectMany,
-        address: addressMany,
-        isConnecting: isConnectingMany,
-        isConnected: isConnectedMany,
-        isDisconnected: isDisconnectedMany,
-    } = useManyWalletConnect();
+        connect: connectWagmi,
+        connectors: connectorsWagmi,
+    } = useConnect();
 
     const {
         connect,
@@ -88,7 +82,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connectMany('walletConnect')}
+                            onClick={() => connectWagmi({connector: connectorsWagmi.find(c => c.id === 'trustWallet')!})}
                             icon={<Image {...TwtAsset} alt='TrustWallet' className='w-16' />}
                             className='bg-[#3375BB] hover:bg-[#193b5f]'>
                                 TrustWallet
@@ -105,7 +99,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connectMany('metaMaskSDK')}
+                            onClick={() => connectWagmi({connector: connectorsWagmi.find(c => c.id === 'metaMaskSDK')!})}
                             icon={<Image {...MetamaskAsset} alt='Metamask' className='w-16' />}
                             className='bg-[#FF7712] hover:bg-[#a34d0b]'
                         >
@@ -114,7 +108,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connectMany('walletConnect')}
+                            onClick={() => connectWagmi({connector: connectorsWagmi.find(c => c.id === 'walletConnect')!})}
                             icon={<IoArrowForwardCircleOutline className='text-5xl' />}
                             className='bg-[#949494] hover:bg-[#505050] gap-2'
                         >
