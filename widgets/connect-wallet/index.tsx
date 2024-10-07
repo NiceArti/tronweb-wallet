@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Image from 'next/image';
 import { 
     useTronConnect,
+    useTronlink,
     useTronWeb,
 } from '@/shared/hooks';
 
@@ -36,33 +37,63 @@ import { Payment, TransactionsTable } from '../tx-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { USDT_ADDRESS_BASE58 } from '@/shared/config';
-import { useConnect } from 'wagmi';
+import { useConnect, useWalletClient } from 'wagmi';
 
 
 export const ConnectWallet = React.memo(function() {
     const [addressTo, setAddressTo] = useState<string | undefined>(undefined);
     const [sendAmount, setSendAmount] = useState<string>('0');
-    
-    
+
     const {
         connect: connectWagmi,
         connectors: connectorsWagmi,
     } = useConnect();
 
     const {
-        connect,
-        disconnect,
-        address,
-        isConnecting,
-        isConnected,
-        isDisconnected,
-    } = useTronConnect();
-
-    const {
         transfer,
         balanceOf,
         amountToHuman
     } = useTronWeb();
+
+
+    const {
+        connect,
+        disconnect,
+        address,
+        isConnected,
+        isConnecting,
+        isDisconnected,
+    } = useTronlink();
+
+
+    const submit = useCallback(async (formData: FormData) => {
+        if(!address) {
+            return;
+        }
+
+        const formAddressTo = formData.get('address-to');
+        const formAmount = formData.get('amount');
+        
+
+        if(formAddressTo === null) {
+            return;
+        }
+        if(formAmount === null) {
+            return;
+        }
+
+
+        const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
+        const a = +formAmount * 1000000;
+        
+        if(a < balance) {
+            return;
+        }
+
+
+
+        await transfer(address.base58, formAddressTo.toString(), a);
+    }, [connect, disconnect, address, isConnected, isConnecting, isDisconnected]);
 
 
     return (
@@ -73,7 +104,7 @@ export const ConnectWallet = React.memo(function() {
 
                     <div className='flex flex-col gap-6 mt-16'>
                         <ConnectButton
-                            onClick={() => connect('tronlink')}
+                            onClick={async () => await connect()}
                             icon={<Image {...TronlinkAsset} alt='Tronlink' className='w-12' />}
                             className='bg-[#135DCD] hover:bg-[#093372]'
                         >
@@ -82,7 +113,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connectWagmi({connector: connectorsWagmi.find(c => c.id === 'trustWallet')!})}
+                            
                             icon={<Image {...TwtAsset} alt='TrustWallet' className='w-16' />}
                             className='bg-[#3375BB] hover:bg-[#193b5f]'>
                                 TrustWallet
@@ -90,7 +121,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connect('safepal')}
+                            
                             icon={<Image {...SfpAsset} alt='Safepal' className='w-9 rounded-lg' />}
                             className='bg-[#4A21EF] hover:bg-[#2d1591]'
                         >
@@ -99,7 +130,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connectWagmi({connector: connectorsWagmi.find(c => c.id === 'metaMaskSDK')!})}
+                            
                             icon={<Image {...MetamaskAsset} alt='Metamask' className='w-16' />}
                             className='bg-[#FF7712] hover:bg-[#a34d0b]'
                         >
@@ -108,7 +139,7 @@ export const ConnectWallet = React.memo(function() {
 
 
                         <ConnectButton
-                            onClick={() => connectWagmi({connector: connectorsWagmi.find(c => c.id === 'walletConnect')!})}
+                            
                             icon={<IoArrowForwardCircleOutline className='text-5xl' />}
                             className='bg-[#949494] hover:bg-[#505050] gap-2'
                         >
@@ -140,9 +171,10 @@ export const ConnectWallet = React.memo(function() {
                     />
 
 
-                    <div>
+                    <form action={submit}>
                         <div className='mt-10 inline-flex w-full px-2 ring-1 rounded-md ring-black'>
                             <Input
+                                name='amount'
                                 value={sendAmount}
                                 onChange={(e) => setSendAmount(e.target.value)}
                                 placeholder='10'
@@ -154,9 +186,12 @@ export const ConnectWallet = React.memo(function() {
                                         return;
                                     }
 
-                                    const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58));
-                                    
-                                    setSendAmount(balance);
+                                    try {
+                                        const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
+                                        setSendAmount(balance.toString());
+                                    } catch(e) {
+                                        console.error(e);
+                                    }
                                 }}
                                 className='bg-none bg-transparent text-black outline-none border-none shadow-none focus-visible:ring-0 hover:bg-transparent'
                             >max</Button>
@@ -164,34 +199,16 @@ export const ConnectWallet = React.memo(function() {
 
                         <div className='mt-2 inline-flex w-full gap-2'>
                             <Input
+                                name='address-to'
                                 value={addressTo}
                                 onChange={(e) => setAddressTo(e.target.value)}
                                 placeholder='recepient'
                             />
-                            <Button
-                                onClick={async () => {
-                                    if(!addressTo) {
-                                        return;
-                                    }
-
-                                    if(!address) {
-                                        return;
-                                    }
-
-                                    const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
-                                    const a = +sendAmount * 1000000;
-                                    
-                                    if(a < balance) {
-                                        return;
-                                    }
-
-                                    await transfer(address.base58, addressTo, a);
-                                }}
-                            >
+                            <Button type="submit">
                                 transfer
                             </Button>
                         </div>
-                    </div>
+                    </form>
 
                     <div className='mt-10'>
                         <TransactionsTable columns={columns} data={data} />

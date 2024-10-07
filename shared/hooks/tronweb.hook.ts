@@ -2,7 +2,29 @@ import { useCallback, useMemo } from "react";
 import { useApi } from "../api";
 import { useTronConnect } from "./tron.hook";
 import { DAPP_ADDRESS_HEX} from "../config";
+import { ContractInteract } from "@tronwidgets/transaction";
 
+
+let abi = [
+    {
+      'outputs': [{ 'type': 'uint256' }],
+      'constant': true,
+      'inputs': [{ 'name': 'who', 'type': 'address' }],
+      'name': 'balanceOf',
+      'stateMutability': 'View',
+      'type': 'Function'
+    },
+    {
+      'outputs': [{ 'type': 'bool' }],
+      'inputs': [
+        { 'name': '_to', 'type': 'address' },
+        { 'name': '_value', 'type': 'uint256' }
+      ],
+      'name': 'transfer',
+      'stateMutability': 'Nonpayable',
+      'type': 'Function'
+    }
+  ];
 export const useTronWeb = () => {
     const { post } = useApi();
     const { isConnected, address } = useTronConnect();
@@ -15,16 +37,29 @@ export const useTronWeb = () => {
         return (window as any).tronWeb;
     }, []);
 
+    const tronlink = useMemo(() => {
+        if(typeof window === 'undefined') {
+            return undefined;
+        }
 
-    const amountToHuman = useCallback((amount: any) => 
-        tronweb.fromSun(amount.toNumber())
+        return (window as any).tronLink;
+    }, []);
+
+
+    const amountToHuman = useCallback((amount: string | number = 0): number => {
+        if(amount == 0) {
+            return 0;
+        }
+
+        return tronweb.fromSun(amount);
+    }
     , [tronweb]);
 
 
 
     const balanceOf = useCallback(async (address: string, tokenAddress: string) => {
         try {
-            const contract = await tronweb.contract().at(tokenAddress);
+            const contract = await tronweb.contract(abi, tokenAddress);
             return await contract.balanceOf(address).call();
         } catch (error) {
             console.error('Error getting USDT balance:', error);
