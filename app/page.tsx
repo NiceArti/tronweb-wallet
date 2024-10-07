@@ -1,6 +1,6 @@
 'use client'
 
-import { ConnectWallet } from "@/widgets/connect-wallet";
+// import { ConnectWallet } from "@/widgets/connect-wallet";
 
 
 export default function Home() {
