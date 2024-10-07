@@ -37,17 +37,12 @@ import { Payment, TransactionsTable } from '../tx-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { USDT_ADDRESS_BASE58 } from '@/shared/config';
-import { useConnect, useWalletClient } from 'wagmi';
 
 
 export const ConnectWallet = React.memo(function() {
     const [addressTo, setAddressTo] = useState<string | undefined>(undefined);
     const [sendAmount, setSendAmount] = useState<string>('0');
 
-    const {
-        connect: connectWagmi,
-        connectors: connectorsWagmi,
-    } = useConnect();
 
     const {
         transfer,

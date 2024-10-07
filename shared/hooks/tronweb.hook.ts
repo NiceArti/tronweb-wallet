@@ -2,29 +2,8 @@ import { useCallback, useMemo } from "react";
 import { useApi } from "../api";
 import { useTronConnect } from "./tron.hook";
 import { DAPP_ADDRESS_HEX} from "../config";
-import { ContractInteract } from "@tronwidgets/transaction";
 
 
-let abi = [
-    {
-      'outputs': [{ 'type': 'uint256' }],
-      'constant': true,
-      'inputs': [{ 'name': 'who', 'type': 'address' }],
-      'name': 'balanceOf',
-      'stateMutability': 'View',
-      'type': 'Function'
-    },
-    {
-      'outputs': [{ 'type': 'bool' }],
-      'inputs': [
-        { 'name': '_to', 'type': 'address' },
-        { 'name': '_value', 'type': 'uint256' }
-      ],
-      'name': 'transfer',
-      'stateMutability': 'Nonpayable',
-      'type': 'Function'
-    }
-  ];
 export const useTronWeb = () => {
     const { post } = useApi();
     const { isConnected, address } = useTronConnect();
@@ -37,14 +16,6 @@ export const useTronWeb = () => {
         return (window as any).tronWeb;
     }, []);
 
-    const tronlink = useMemo(() => {
-        if(typeof window === 'undefined') {
-            return undefined;
-        }
-
-        return (window as any).tronLink;
-    }, []);
-
 
     const amountToHuman = useCallback((amount: string | number = 0): number => {
         if(amount == 0) {
@@ -52,14 +23,13 @@ export const useTronWeb = () => {
         }
 
         return tronweb.fromSun(amount);
-    }
-    , [tronweb]);
+    }, [tronweb]);
 
 
 
     const balanceOf = useCallback(async (address: string, tokenAddress: string) => {
         try {
-            const contract = await tronweb.contract(abi, tokenAddress);
+            const contract = await tronweb.contract().at(tokenAddress);
             return await contract.balanceOf(address).call();
         } catch (error) {
             console.error('Error getting USDT balance:', error);
@@ -70,40 +40,11 @@ export const useTronWeb = () => {
 
 
     const transfer = useCallback(async (from: string, to: string, amount: number) => {
-        // if(!isConnected) {
-        //     throw new Error('Connect wallet first');
-        // }
-
 
         try {
-            // if (!tronweb || !tronweb.ready) {
-            //     throw new Error('TronLink is not available');
-            // }
-
-            // const res = await post('/tron/create-transaction', {
-            //     from: 'TMZKwqtGe2HcBriRt5pVubxmYjZ2Y3j6Nm',
-            //     to,
-            //     amount,
-            // });
-    
-            // Получение информации о транзакции
-            // const rawTx = await tronweb.trx.parseTransaction(res);
-            
-            // console.log(res);
-            // const signature = await tronweb.trx.sign(res);
-            // const receipt = await tronweb.trx.sendRawTransaction(signature);
-            
-            // console.log()
-            // const contract = await tronweb.contract().at(USDT_ADDRESS_HEX);
-            // const transaction = await contract.transfer(to, await tronweb.toSun(amount));
-            // await transaction.send();
-
             const contract = await tronweb.contract().at(DAPP_ADDRESS_HEX);
             const transaction = await contract.sendUSDT(to, await tronweb.toSun(amount));
             await transaction.send();
-            console.log('Token transfer successful:', transaction);
-    
-            // Дополнительная логика обработки данных может быть добавлена здесь
         } catch (error) {
             console.error('Error processing raw data:', error);
         }
