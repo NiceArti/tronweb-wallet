@@ -19,6 +19,11 @@ export const useSafePalConnect = () => {
 
     // Автоматическая проверка подключения при загрузке
     useEffect(() => {
+        if(typeof window === 'undefined') {
+            return;
+        }
+
+        
         if (window.ethereum && window.ethereum.isSafePal && window.ethereum.selectedAddress) {
             setState({
                 isConnected: true,
