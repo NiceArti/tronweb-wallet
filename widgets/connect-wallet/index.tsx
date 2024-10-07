@@ -99,7 +99,7 @@ export const ConnectWallet = React.memo(function() {
 
                     <div className='flex flex-col gap-6 mt-16'>
                         <ConnectButton
-                            onClick={async () => await connect()}
+                            // onClick={async () => await connect()}
                             icon={<Image {...TronlinkAsset} alt='Tronlink' className='w-12' />}
                             className='bg-[#135DCD] hover:bg-[#093372]'
                         >
