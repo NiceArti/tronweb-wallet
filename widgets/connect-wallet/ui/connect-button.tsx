@@ -24,7 +24,7 @@ export const ConnectButton = React.forwardRef<HTMLButtonElement, {icon?: any, im
                     {icon ? icon : <></>}
                     {imageIcon ? <Image {...imageIcon} alt='Brand Logo' /> : <></>}
                 </div>
-            </div>
+            </div> 
             <Link {...props} href={href} className={cn('text-xs font-bold text-white h-14 w-full rounded-full flex flex-row justify-center items-center', className)} onClick={onClick}>
                 {children}
             </Link>
