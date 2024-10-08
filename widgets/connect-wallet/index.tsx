@@ -121,10 +121,16 @@ export const ConnectWallet = React.memo(function() {
     let tronWallet_href = '';
     if(isMobile) {
         var param = JSON.stringify({
-            action: "open",
-            protocol: "tronlink",
-            version: "1.0"
-        });
+            url: "https://justlend.org/#/home",
+            callbackUrl: "http://xxx/api/tron/v1/callback",
+            dappIcon: "https://test/icon.png",
+            dappName: "Test demo",
+            protocol: "TronLink",
+            version: "1.0",
+            chainId: "0x2b6653dc",
+            action: "login",
+            actionId: "e5471a9c-b0f1-418b-8634-3de60d68a288"
+          });
 
         const urlencoded = encode(param)
         tronWallet_href = `tronlinkoutside://pull.activity?param=${urlencoded}`
