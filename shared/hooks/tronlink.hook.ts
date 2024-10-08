@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { TronAddress } from '../store';
+import { useApi } from '../api';
 
 export type Wallets = 'tronlink' | 'safepal';
 
 export const useTronlink = () => {
+    const { get } = useApi();
     const [tlProvider, setTlProvider] = useState<any | undefined>(undefined);
     const [state, setState] = useState<{
         isConnected?: boolean,
@@ -17,7 +19,6 @@ export const useTronlink = () => {
         address: undefined
     });
 
-
     const tronLinkProvider = useMemo(() => {
         if(typeof window === 'undefined') {
             return undefined;
@@ -26,7 +27,6 @@ export const useTronlink = () => {
         setTlProvider((window as any).tronLink);
         return (window as any).tronLink;
     }, [tlProvider]);
-
 
     // Автоматическая проверка подключения при загрузке
     useEffect(() => {
@@ -48,7 +48,6 @@ export const useTronlink = () => {
             });
         }
     }, [tronLinkProvider]);
-
 
     const connect = useCallback(async () => {
         if(tlProvider === undefined) {
@@ -85,8 +84,6 @@ export const useTronlink = () => {
         tlProvider,
     ]);
 
-
-
     const disconnect = useCallback(() => {
         setState({
             isConnected: false,
@@ -100,5 +97,13 @@ export const useTronlink = () => {
         tlProvider,
     ]);
 
-    return { ...state, connect, disconnect };
+    const checkLogin = useCallback(async (actionId: string) =>{
+        return await get(`https://tronweb-api.cryptoflats.io/tron?actionId=${actionId}`)
+    }, [
+        state,
+        tlProvider,
+        get
+    ])
+
+    return { ...state, connect, disconnect, checkLogin};
 };

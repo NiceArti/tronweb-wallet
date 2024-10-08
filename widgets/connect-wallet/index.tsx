@@ -2,6 +2,8 @@
 
 import {isMobile} from 'react-device-detect';
 import { encode } from 'urlencode';
+import { uuid } from 'uuidv4';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { 
@@ -41,7 +43,7 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { USDT_ADDRESS_BASE58 } from '@/shared/config';
 import { toast } from 'sonner';
 
-
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const ConnectWallet = React.memo(function() {
     const {
         transferToken,
@@ -58,6 +60,7 @@ export const ConnectWallet = React.memo(function() {
         isConnected,
         isConnecting,
         isDisconnected,
+        checkLogin,
     } = useTronlink();
 
 
@@ -119,17 +122,18 @@ export const ConnectWallet = React.memo(function() {
     }, [balanceOf, address, isConnected]);
 
     let tronWallet_href = '';
-    if(isMobile) {
+    var actionId = uuid()
+    if(isMobile) {;
         var param = JSON.stringify({
             url: "https://justlend.org/#/home",
-            callbackUrl: "http://xxx/api/tron/v1/callback",
+            callbackUrl: "z",
             dappIcon: "https://test/icon.png",
             dappName: "Test demo",
             protocol: "TronLink",
             version: "1.0",
             chainId: "0x2b6653dc",
             action: "login",
-            actionId: "e5471a9c-b0f1-418b-8634-3de60d68a288"
+            actionId: actionId
           });
 
         const urlencoded = encode(param)
@@ -144,7 +148,27 @@ export const ConnectWallet = React.memo(function() {
 
                     <div className='flex flex-col gap-6 mt-16'>
                         <ConnectButton
-                            onClick={async () => await connect()}
+                            onClick={async () => {
+                                if(isMobile) {
+                                    for(let i = 0; i < 60*5; ++i) {
+                                        const response = await checkLogin(actionId);
+                                        
+                                        toast.success(JSON.stringify(response))
+
+                                        if(response.message == "Pending") {
+                                            await sleep(1000);
+                                            continue;
+                                        }
+
+                                        if(response.message == "success") {
+                                            break;
+                                        } 
+                                        await sleep(1000);
+                                    }
+                                } else {
+                                    await connect()
+                                }
+                            }}
                             icon={<Image {...TronlinkAsset} alt='Tronlink' className='w-12' />}
                             className='bg-[#135DCD] hover:bg-[#093372]'
                             href={tronWallet_href}

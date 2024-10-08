@@ -37,6 +37,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "urlencode": "^2.0.0",
+    "uuidv4": "^6.2.13",
     "viem": "^2.21.16",
     "wagmi": "^2.12.16"
   },
