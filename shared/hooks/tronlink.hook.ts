@@ -17,13 +17,7 @@ export const useTronlink = () => {
     });
 
 
-    const tronLinkProvider = useMemo(() => {
-        if(typeof window === 'undefined') {
-            return undefined;
-        }
-
-        return (window as any).tronLink;
-    }, []);
+    const tronLinkProvider = typeof window === 'undefined' ? undefined : (window as any).tronLink;
 
 
     // Автоматическая проверка подключения при загрузке
