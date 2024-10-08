@@ -126,7 +126,7 @@ export const ConnectWallet = React.memo(function() {
     if(isMobile) {;
         var param = JSON.stringify({
             url: "https://justlend.org/#/home",
-            callbackUrl: "z",
+            callbackUrl: "https://tronweb-api.cryptoflats.io/tron",
             dappIcon: "https://test/icon.png",
             dappName: "Test demo",
             protocol: "TronLink",
