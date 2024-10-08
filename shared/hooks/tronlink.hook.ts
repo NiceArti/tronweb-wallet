@@ -4,6 +4,7 @@ import { TronAddress } from '../store';
 export type Wallets = 'tronlink' | 'safepal';
 
 export const useTronlink = () => {
+    const [tlProvider, setTlProvider] = useState<any | undefined>(undefined);
     const [state, setState] = useState<{
         isConnected?: boolean,
         isConnecting?: boolean,
@@ -17,32 +18,40 @@ export const useTronlink = () => {
     });
 
 
-    const tronLinkProvider = (window as any).tronLink;
+    const tronLinkProvider = useMemo(() => {
+        if(typeof window === 'undefined') {
+            return undefined;
+        }
+
+        setTlProvider((window as any).tronLink);
+        return (window as any).tronLink;
+    }, [tlProvider]);
 
 
     // Автоматическая проверка подключения при загрузке
     useEffect(() => {
-        if(!tronLinkProvider) {
+        setTlProvider(tronLinkProvider)
+        if(!tlProvider) {
             return;
         }
-        if(!tronLinkProvider.ready) {
+        if(!tlProvider.ready) {
             return;
         }
 
 
-        if (tronLinkProvider.ready && tronLinkProvider.defaultAddress !== undefined) {
+        if (tlProvider.ready && tlProvider.defaultAddress !== undefined) {
             setState({
                 isConnected: true,
                 isConnecting: false,
                 isDisconnected: false,
-                address: tronLinkProvider.defaultAddress as TronAddress,
+                address: tlProvider.defaultAddress as TronAddress,
             });
         }
-    }, []);
+    }, [tronLinkProvider]);
 
 
     const connect = useCallback(async () => {
-        if(tronLinkProvider === undefined) {
+        if(tlProvider === undefined) {
             throw new Error('TronLink extension has not been installed!');
         }
 
@@ -52,14 +61,14 @@ export const useTronlink = () => {
                 isConnecting: true,
             }));
             
-            await tronLinkProvider.request({ method: 'tron_requestAccounts' });
+            await tlProvider.request({ method: 'tron_requestAccounts' });
             
             setState(prevState => ({
                 ...prevState,
                 isConnected: true,
                 isConnecting: false,
                 isDisconnected: false,
-                address: tronLinkProvider.tronWeb.defaultAddress as TronAddress,
+                address: tlProvider.tronWeb.defaultAddress as TronAddress,
             }));
         } catch(e) {
             setState(prevState => ({
@@ -73,7 +82,7 @@ export const useTronlink = () => {
         }
     }, [
         state,
-        tronLinkProvider,
+        tlProvider,
     ]);
 
 
@@ -88,7 +97,7 @@ export const useTronlink = () => {
 
     }, [
         state,
-        tronLinkProvider,
+        tlProvider,
     ]);
 
     return { ...state, connect, disconnect };
