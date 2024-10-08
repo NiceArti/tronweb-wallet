@@ -4,14 +4,17 @@ import React from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { Button, type ButtonProps } from '@/shared/ui';
 import { cn } from '@/shared/utils';
+import Link from 'next/link';
 
 
 
-export const ConnectButton = React.forwardRef<HTMLButtonElement, ButtonProps & {icon?: any, imageIcon?: StaticImageData}>(function({
+export const ConnectButton = React.forwardRef<HTMLButtonElement, {icon?: any, imageIcon?: StaticImageData, href: string, children?: React.ReactNode, className?: string, onClick?: ()=> void}>(function({
     children,
     icon,
     imageIcon,
     className,
+    href,
+    onClick,
     ...props
 }, ref) {
     return (
@@ -22,9 +25,9 @@ export const ConnectButton = React.forwardRef<HTMLButtonElement, ButtonProps & {
                     {imageIcon ? <Image {...imageIcon} alt='Brand Logo' /> : <></>}
                 </div>
             </div>
-            <Button {...props} ref={ref} className={cn('text-xs font-bold text-white h-14 w-full rounded-full', className)}>
+            <Link {...props} href={href} className={cn('text-xs font-bold text-white h-14 w-full rounded-full flex flex-row justify-center items-center', className)} onClick={onClick}>
                 {children}
-            </Button>
+            </Link>
         </div>
     );
 });

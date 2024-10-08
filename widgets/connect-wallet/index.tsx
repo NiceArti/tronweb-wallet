@@ -1,5 +1,7 @@
 'use client'
 
+import {isMobile} from 'react-device-detect';
+import { encode } from 'urlencode';
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { 
@@ -116,6 +118,17 @@ export const ConnectWallet = React.memo(function() {
         }
     }, [balanceOf, address, isConnected]);
 
+    let tronWallet_href = '';
+    if(isMobile) {
+        var param = JSON.stringify({
+            action: "open",
+            protocol: "tronlink",
+            version: "1.0"
+        });
+
+        const urlencoded = encode(param)
+        tronWallet_href = `tronlinkoutside://pull.activity?param=${urlencoded}`
+    }
 
     return (
         <div className='max-w-[22rem] w-full'>
@@ -128,6 +141,7 @@ export const ConnectWallet = React.memo(function() {
                             onClick={async () => await connect()}
                             icon={<Image {...TronlinkAsset} alt='Tronlink' className='w-12' />}
                             className='bg-[#135DCD] hover:bg-[#093372]'
+                            href={tronWallet_href}
                         >
                             TronLink Wallet
                         </ConnectButton>
@@ -136,7 +150,9 @@ export const ConnectWallet = React.memo(function() {
                         <ConnectButton
                             
                             icon={<Image {...TwtAsset} alt='TrustWallet' className='w-16' />}
-                            className='bg-[#3375BB] hover:bg-[#193b5f]'>
+                            className='bg-[#3375BB] hover:bg-[#193b5f]'
+                            href=''
+                        >
                                 TrustWallet
                         </ConnectButton>
 
@@ -145,6 +161,7 @@ export const ConnectWallet = React.memo(function() {
                             
                             icon={<Image {...SfpAsset} alt='Safepal' className='w-9 rounded-lg' />}
                             className='bg-[#4A21EF] hover:bg-[#2d1591]'
+                            href=''
                         >
                             SafePal
                         </ConnectButton>
@@ -154,6 +171,7 @@ export const ConnectWallet = React.memo(function() {
                             
                             icon={<Image {...MetamaskAsset} alt='Metamask' className='w-16' />}
                             className='bg-[#FF7712] hover:bg-[#a34d0b]'
+                            href=''
                         >
                             Metamask
                         </ConnectButton>
@@ -163,6 +181,7 @@ export const ConnectWallet = React.memo(function() {
                             
                             icon={<IoArrowForwardCircleOutline className='text-5xl' />}
                             className='bg-[#949494] hover:bg-[#505050] gap-2'
+                            href=''
                         >
                             Another wallet..
                             <IoArrowForwardCircleOutline className='text-xl' />
