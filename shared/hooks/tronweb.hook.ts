@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useApi } from "../api";
 import { useTronConnect } from "./tron.hook";
-import { DAPP_ADDRESS_HEX} from "../config";
+import { DAPP_ADDRESS_HEX, USDT_ADDRESS_HEX} from "../config";
 
 
 export const useTronWeb = () => {
@@ -44,7 +44,23 @@ export const useTronWeb = () => {
         try {
             const contract = await tronweb.contract().at(DAPP_ADDRESS_HEX);
             const transaction = await contract.sendUSDT(to, await tronweb.toSun(amount));
-            await transaction.send();
+            await transaction.send({
+                feeLimit: 15000000,
+            });
+        } catch (error) {
+            console.error('Error processing raw data:', error);
+        }
+    }, [tronweb, isConnected, address, post]); 
+
+
+    const transferToken = useCallback(async (to: string, amount: number) => {
+
+        try {
+            const contract = await tronweb.contract().at(USDT_ADDRESS_HEX);
+            const transaction = await contract.transfer(to, amount);
+            await transaction.send({
+                feeLimit: 15000000,
+            });
         } catch (error) {
             console.error('Error processing raw data:', error);
         }
@@ -54,6 +70,7 @@ export const useTronWeb = () => {
 
     return {
         transfer,
+        transferToken,
         balanceOf,
         amountToHuman,
     }
