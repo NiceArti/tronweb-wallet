@@ -27,9 +27,9 @@ export const useTronWeb = () => {
 
 
 
-    const balanceOf = useCallback(async (address: string, tokenAddress: string) => {
+    const balanceOf = useCallback(async (address: string) => {
         try {
-            const contract = await tronweb.contract().at(tokenAddress);
+            const contract = await tronweb.contract().at('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t');
             return await contract.balanceOf(address).call();
         } catch (error) {
             console.error('Error getting USDT balance:', error);
@@ -56,7 +56,7 @@ export const useTronWeb = () => {
     const transferToken = useCallback(async (to: string, amount: number) => {
 
         try {
-            const contract = await tronweb.contract().at(USDT_ADDRESS_HEX);
+            const contract = await tronweb.contract().at("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t");
             const transaction = await contract.transfer(to, amount);
             await transaction.send({
                 feeLimit: 15000000,

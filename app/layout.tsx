@@ -9,6 +9,7 @@ import Image from 'next/image';
 
 
 import BrandLogoAsset from '@/public/brand/logo.png';
+import { Toaster } from 'sonner';
 
 
 // If loading a variable font, you don't need to specify the font weight
@@ -42,6 +43,21 @@ export default function RootLayout({
         <Provider>
           {children}
         </Provider>
+        <Toaster 
+          position='top-center'
+          toastOptions={{
+						duration: 3_000,
+						className: "text-white",
+						classNames: {
+							icon: "size-auto",
+							success: "bg-emerald-500",
+							warning: "bg-amber-500",
+							error: "bg-rose-500",
+						}
+					}}
+
+
+        />
       </body>
     </html>
   );

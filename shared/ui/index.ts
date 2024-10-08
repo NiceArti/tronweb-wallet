@@ -29,3 +29,4 @@ export {
     DropdownMenuSubTrigger,
     DropdownMenuRadioGroup,
 } from './dropdown-menu';
+export {Toaster} from './sonner';

