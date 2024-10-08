@@ -17,7 +17,7 @@ export const useTronlink = () => {
     });
 
 
-    const tronLinkProvider = typeof window === 'undefined' ? undefined : (window as any).tronLink;
+    const tronLinkProvider = (window as any).tronLink;
 
 
     // Автоматическая проверка подключения при загрузке
